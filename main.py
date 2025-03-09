@@ -57,7 +57,7 @@ def main():
         game.board.dynamic_depth(d_count, depth)
 
         if game.turn == RED:
-            value, new_board, nodes_evaluated = minimax(game.get_board(), difficulty, True, game)
+            value, new_board, nodes_evaluated = minimax(game.get_board(), depth, True, game)
             total_nodes += nodes_evaluated
             game.ai_move(new_board)
             piece_sound.play()
