@@ -6,37 +6,37 @@ from .piece import Piece
 
 class Board:
     def __init__(self):
-        self.board = []
-        self.BLACK_left = self.RED_left = 12
-        self.BLACK_kings = self.RED_kings = 0
-        self.create_board()
+        self.board = [] 
+        self.BLACK_left = self.RED_left = 12 #initial number of pieces for each player
+        self.BLACK_kings = self.RED_kings = 0 
+        self.create_board() 
 
-    def dynamic_depth(self, d_count, depth):
+    def dynamic_depth(self, d_count, depth): #dynamic depth adjustment. need selection to ensure that this happens once- when the player gets to endgame
         if (d_count == 0) and ((self.BLACK_left <= 3) or (self.RED_left <= 3) or ((self.BLACK_kings + self.RED_kings) / (self.BLACK_left + self.RED_left) >= 0.5) or (self.BLACK_left == self.BLACK_kings) or (self.RED_left == self.RED_kings)):
             depth += 1
 
-    def move(self, piece, row, col):
+    def move(self, piece, row, col): 
         self.board[piece.row][piece.col], self.board[row][col] = self.board[row][col], self.board[piece.row][piece.col]
         piece.move(row, col)
 
-        if row == ROWS - 1 or row == 0 and not piece.king:
-            piece.make_king()
-            if piece.color == RED:
-                self.RED_kings += 1
+        if row == ROWS - 1 or row == 0 and not piece.king: #updates the piece to a king if they reach the end of the board. They should not be a king already.
+            piece.make_king()  
+            if piece.color == RED:  #so correct counter is updated
+                self.RED_kings += 1 
             else:
                 self.BLACK_kings += 1 
 
-    def draw_squares(self, win):
-        pygame.display.set_caption("Droughts game")
-        board_background = pygame.image.load("assets/board_background.png")
+    def draw_squares(self, win): #draws the board
+        pygame.display.set_caption("Droughts game") #caption for the window
+        board_background = pygame.image.load("assets/board_background.png") #background image for the board- this has the border with algrbraic notation
         SCREEN.blit(board_background, (0, 0)) 
-        offset_x = (800 - (SQUARE_SIZE * COLS)) // 2  # Centering offset (52 pixels)
+        offset_x = (800 - (SQUARE_SIZE * COLS)) // 2  #centering offset 
         
         for row in range(ROWS):
             for col in range(row % 2, COLS, 2):
                 pygame.draw.rect(win, BLACK, (col * SQUARE_SIZE + offset_x, row * SQUARE_SIZE + 52, SQUARE_SIZE, SQUARE_SIZE))
     
-    def evaluate(self):
+    def evaluate(self): #how the AI assigns values to different move options using heuristics
         heuristic_value = 0 #initial state
 
         # weightings
@@ -47,7 +47,7 @@ class Board:
         vulnerable_pieces_weight = -0.2
         strategic_block_weight = 0.25
 
-        # count of all pieces and their type for RED (AI)
+        # count of all pieces and their type for AI. AI is RED here. 
         regular_pieces_RED = 0
         king_pieces_RED = 0
         back_row_RED = 0
@@ -55,7 +55,7 @@ class Board:
         strategic_block_RED = 0
         vulnerable_pieces_RED = 0
         
-        #count of all pieces and their types for BLACK (player)
+        #count of all pieces and their types for player
         regular_pieces_BLACK = 0
         king_pieces_BLACK = 0
         back_row_BLACK = 0
@@ -63,7 +63,7 @@ class Board:
         strategic_block_BLACK = 0
         vulnerable_pieces_BLACK = 0
 
-        for row in range(ROWS):  # iterate through all pieces on the board
+        for row in range(ROWS):  #iterate through all pieces on the board
             for col in range(COLS):
                 piece = self.board[row][col]
                 if piece != 0:
@@ -111,7 +111,7 @@ class Board:
         return heuristic_value
 
 
-    def get_all_pieces(self, color):
+    def get_all_pieces(self, color): #gets all the pieces on the board so needs to iterate thoroughly trhough every row and column
         pieces = []
         for row in self.board:
             for piece in row:
@@ -119,10 +119,10 @@ class Board:
                     pieces.append(piece)
         return pieces
 
-    def get_piece(self, row, col):
+    def get_piece(self, row, col): #gets the specific piece at a defined row and column
         return self.board[row][col]
 
-    def create_board(self):
+    def create_board(self): #actually creates the board
         for row in range(ROWS):
             self.board.append([])
             for col in range(COLS):
@@ -136,7 +136,7 @@ class Board:
                 else:
                     self.board[row].append(0)
 
-    def draw(self, win):
+    def draw(self, win): #draws pieces
         self.draw_squares(win)
         offset_x = (800 - (SQUARE_SIZE * COLS)) // 2  # Same offset as squares
 
@@ -146,16 +146,16 @@ class Board:
                 if piece != 0:
                     piece.draw(win, x_offset=offset_x, y_offset=52)
     
-    def remove(self, pieces):
+    def remove(self, pieces): #removes pieces from the board e.g. for when they are captured
         for piece in pieces:
             self.board[piece.row][piece.col] = 0
             if piece != 0:
                 if piece.color == BLACK:
-                    self.BLACK_left -= 1
+                    self.BLACK_left -= 1 #piece is removed so counter is decremented
                 else:
                     self.RED_left -= 1
     
-    def winner(self):
+    def winner(self): #checks if there is a winner. checks if either all pieces are captured or if there are no valid moves left
         if self.BLACK_left <= 0 or not self.has_valid_moves(BLACK):
             time.sleep(2)
             return (f"RED wins!")
@@ -165,22 +165,22 @@ class Board:
             return (f"BLACK wins!")
     
 
-    def get_valid_moves(self, piece):
+    def get_valid_moves(self, piece): #gets all the valid moves for a piece
         moves = {}
-        left = piece.col - 1
+        left = piece.col - 1 
         right = piece.col + 1
         row = piece.row
 
         if piece.color == BLACK or piece.king:
             moves.update(self._traverse_left(row -1, max(row-3, -1), -1, piece.color, left))
             moves.update(self._traverse_right(row -1, max(row-3, -1), -1, piece.color, right))
-        if piece.color == RED or piece.king:
+        if piece.color == RED or piece.king:  #if the piece is red or a king as kings can move in both directions
             moves.update(self._traverse_left(row +1, min(row+3, ROWS), 1, piece.color, left))
             moves.update(self._traverse_right(row +1, min(row+3, ROWS), 1, piece.color, right))
 
         return moves
 
-    def has_valid_moves(self, color):
+    def has_valid_moves(self, color): #checks to see if there are any valid moves left for a player. if not, then they lose
         for row in self.board:
             for piece in row:
                 if piece != 0 and piece.color == color:
@@ -189,7 +189,7 @@ class Board:
     
         return False
 
-    def _traverse_left(self, start, stop, step, color, left, skipped=[]):
+    def _traverse_left(self, start, stop, step, color, left, skipped=[]):  #finds all the valid moves to the left of a piece
         moves = {}
         last = []
         for r in range(start, stop, step):
@@ -198,7 +198,7 @@ class Board:
             
             current = self.board[r][left]
             if current == 0:
-                if skipped and not last:
+                if skipped and not last: #since pieces can be jumped over
                     break
                 elif skipped:
                     moves[(r, left)] = last + skipped
@@ -220,9 +220,9 @@ class Board:
 
             left -= 1
         
-        return moves
+        return moves #needs to return this so that the AI has a list of all the valid moves that it can then choose from 
 
-    def _traverse_right(self, start, stop, step, color, right, skipped=[]):
+    def _traverse_right(self, start, stop, step, color, right, skipped=[]): #finds all the valid moves to the right of a piece
         moves = {}
         last = []
         for r in range(start, stop, step):
@@ -231,9 +231,9 @@ class Board:
             
             current = self.board[r][right]
             if current == 0:
-                if skipped and not last:
+                if skipped and not last: 
                     break
-                elif skipped:
+                elif skipped: 
                     moves[(r,right)] = last + skipped
                 else:
                     moves[(r, right)] = last

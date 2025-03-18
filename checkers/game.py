@@ -3,7 +3,7 @@ from .constants import BLACK, RED, BLUE, SQUARE_SIZE, WIDTH, HEIGHT, COLS, ROWS,
 from .board import Board
 
 class Game:
-    def __init__(self, win, ):
+    def __init__(self, win):
         self.win = win
         self.BLACK_time = 900  # same as 15 mins
         self.turn_start_time = pygame.time.get_ticks()  # Start tracking time

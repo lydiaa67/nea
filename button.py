@@ -1,5 +1,5 @@
 class Button():
-	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+	def __init__(self, image, pos, text_input, font, base_color, hovering_color): 
 		self.image = image
 		self.x_pos = pos[0]
 		self.y_pos = pos[1]
@@ -13,17 +13,17 @@ class Button():
 		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
 		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
-	def update(self, screen):
+	def update(self, screen): #updates the button so that its always displaying the latets version of itself
 		if self.image is not None:
 			screen.blit(self.image, self.rect)
 		screen.blit(self.text, self.text_rect)
 
-	def checkForInput(self, position):
+	def checkForInput(self, position): #so that it can responf to user input
 		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
 			return True
 		return False
 
-	def changeColor(self, position):
+	def changeColor(self, position): #for when the player hovers over it
 		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
 			self.text = self.font.render(self.text_input, True, self.hovering_color)
 		else:

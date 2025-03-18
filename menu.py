@@ -26,7 +26,7 @@ confetti_img = pygame.transform.scale(confetti, (200, 300))
 LEFT_EYE_X, LEFT_EYE_Y = 330, 455 #coordinates for the left eye of baby
 RIGHT_EYE_X, RIGHT_EYE_Y = 450, 455 #coordinates for the right eye
 
-class Tear:
+class Tear: #draws tears onto baby's face for loser
     def __init__(self, x, y):
         self.x = x + random.randint(-3, 3)  #adds some slight variation for where the tears appear, so individual tears are visible when they fall
         self.y = y
@@ -40,7 +40,7 @@ class Tear:
     def draw(self, screen):
         screen.blit(tear_img, (self.x, self.y))
 
-class Confetti:
+class Confetti: #draws falling confetti onto screen for winner
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -58,11 +58,11 @@ class Confetti:
 tears = [Tear(LEFT_EYE_X, LEFT_EYE_Y) for _ in range(5)] + [Tear(RIGHT_EYE_X, RIGHT_EYE_Y) for _ in range(5)]
 confettis = [Confetti(random.randint(0, 800), random.randint(0, 200)) for _ in range(10)]
 
-def loser():
+def loser(): #for when the player loses
     pygame.display.set_caption("Loser")
     stop_music()
 
-    start_time = time.time()
+    start_time = time.time() #necessary to ensure that the tears fall for 6 seconds before the screen clears
     clock = pygame.time.Clock()
 
     #creates the text message for the screen
@@ -73,7 +73,7 @@ def loser():
     tears_start_time = time.time()
 
     while True:
-        sad_trombone.play(-1)
+        sad_trombone.play(-1) #plays the sad trombone sound on loop whilsy the screen is displayed
 
         #quits background with baby image
         SCREEN.blit(BG3, (0, 0)) 
@@ -105,17 +105,16 @@ def loser():
             main_menu()
             return
 
-def winner():
+def winner(): #for when the player wins
     pygame.display.set_caption("Winner")
     stop_music()
 
-    SCREEN.blit(celebration1, (0, 0))
-
+    SCREEN.blit(celebration1, (0, 0)) #background for the winner screen. the initial background is this one and it should alternate with the other background
     
     confetti_start_time = time.time()
 
     #defines the  colors for the text
-    colors = [(255, 0, 0), (255, 165, 0), (255, 255, 0), (51, 255, 51), (0, 191, 0), (57, 229, 225), (51, 51, 255), (168, 37, 255), (238, 130, 238)]
+    colors = [(255, 0, 0), (255, 165, 0), (255, 255, 0), (51, 255, 51), (0, 191, 0), (57, 229, 225), (51, 51, 255), (168, 37, 255), (238, 130, 238)] #colours for the words to flash between
 
     start_time = time.time()
     last_background_switch = time.time()  #tracks last background switch time
@@ -125,11 +124,11 @@ def winner():
     clock = pygame.time.Clock()  #controls frame rate
 
     while True:
-        fanfare_sound.play(-1)
+        fanfare_sound.play(-1) #plats on loop
 
         elapsed_time = time.time() - start_time  #updates elapsed time
 
-        if elapsed_time >= 6:  #stops after 4 seconds
+        if elapsed_time >= 6:  #stops after 6 seconds
             break
 
         if time.time() - confetti_start_time < 6:
@@ -138,17 +137,17 @@ def winner():
                 confetti.draw(SCREEN)
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q):
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q): #keyboard inputs are also accepted
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_b:
                 fanfare_sound.stop()
-                main_menu()
+                main_menu() #back to main menu
                 return
 
         #in order to switch the background every 0.2 seconds
         if time.time() - last_background_switch >= background_switch_interval:
-            if j % 2 == 0:
+            if j % 2 == 0: #modulus used to switch the background
                 SCREEN.blit(celebration1, (0, 0))  #celebration1
             else:
                 SCREEN.blit(celebration2, (0, 0))  #celebration2
@@ -168,7 +167,7 @@ def winner():
 
         clock.tick(30)  #limit the frame rate to 30 FPS for smooth animation
     fanfare_sound.stop()
-    main_menu()  #switches to main_menu after 4 seconds
+    main_menu()  #switches to main_menu after 6 seconds automatically
     
 def options():
     pygame.display.set_caption("Rules")
@@ -176,10 +175,10 @@ def options():
     while True:
         SCREEN.blit(BG2, (0, 0))
 
-        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos() #so that the mouse can be used to select options since its position on the window is known
 
-        OPTIONS_BACK = Button(image=None, pos=(600, 690), 
-                            text_input="BACK", font=get_font(40), base_color="#455946", hovering_color="#5c0603ff")
+        OPTIONS_BACK = Button(image=None, pos=(600, 690),  
+                            text_input="BACK", font=get_font(40), base_color="#455946", hovering_color="#5c0603ff") #back button
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
@@ -194,13 +193,13 @@ def options():
                 if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
                     main_menu()
 
-        pygame.display.update()
+        pygame.display.update() #updates the screen
 
-def settings():
+def settings(): #settings screen
     global difficulty
     pygame.display.set_caption("Settings")
     while True:
-            board_background = pygame.image.load("assets/board_background.png")
+            board_background = pygame.image.load("assets/board_background.png") #so that the background is the one that I want - transparent
             SCREEN.blit(board_background, (0, 0))
            
             settings_rect = settings_background.get_rect(center=(400, 400))
@@ -208,10 +207,10 @@ def settings():
 
             SETTINGS_MOUSE_POS = pygame.mouse.get_pos()
            
-            SETTINGS_TEXT = get_font(70).render("SETTINGS", True, "White")
+            SETTINGS_TEXT = get_font(70).render("SETTINGS", True, "White") #the title
             SETTINGS_RECT = SETTINGS_TEXT.get_rect(center=(400, 110))
 
-
+            #the different buttons for the levels to choose from
             LV1_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(400, 250),
                                 text_input="EASY", font=get_font(75), base_color="#D8FCFF", hovering_color="White")
             LV2_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(400, 400),
@@ -227,8 +226,7 @@ def settings():
 
             SCREEN.blit(SETTINGS_TEXT, SETTINGS_RECT)
 
-
-            for button in [LV1_BUTTON, LV2_BUTTON, LV3_BUTTON]:
+            for button in [LV1_BUTTON, LV2_BUTTON, LV3_BUTTON]: #so that the buttons are displayed on the screen and vary with cover if the mouse hovers over them
                 button.changeColor(SETTINGS_MOUSE_POS)
                 button.update(SCREEN)
            
@@ -241,8 +239,8 @@ def settings():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if LV1_BUTTON.checkForInput(SETTINGS_MOUSE_POS):
                         difficulty = "easy"
-                        return difficulty
-                    if LV2_BUTTON.checkForInput(SETTINGS_MOUSE_POS):
+                        return difficulty #so that the dissiculty given the the player matches up with the level they chose
+                    if LV2_BUTTON.checkForInput(SETTINGS_MOUSE_POS): 
                         difficulty = "medium"
                         return difficulty
                     if LV3_BUTTON.checkForInput(SETTINGS_MOUSE_POS):
@@ -253,8 +251,8 @@ def settings():
     
             pygame.display.update()
 
-def stats():
-    pygame.display.set_caption("⭐Stats⭐")
+def stats(): #stats screen 
+    pygame.display.set_caption("⭐Stats⭐") #title for the stats screen
     db_instance = Database_for_stats()
     #upack the four stat rows (id 1, 2, 3, and 4)
     (wins1, losses1, quits1), (wins2, losses2, quits2), (wins3, losses3, quits3), (wins4, losses4, quits4) = db_instance.get_stats()
@@ -263,7 +261,8 @@ def stats():
     def calc_win_rate(wins, losses):
         return (wins / (wins + losses) * 100) if (wins + losses) != 0 else 0
 
-    win_rate1 = calc_win_rate(wins1, losses1)
+    #win rate calculated for each row.
+    win_rate1 = calc_win_rate(wins1, losses1) 
     win_rate2 = calc_win_rate(wins2, losses2)
     win_rate3 = calc_win_rate(wins3, losses3)
     win_rate4 = calc_win_rate(wins4, losses4)
@@ -275,7 +274,7 @@ def stats():
 
     while True:
         GREY = (98, 120, 156)
-        SCREEN.fill(GREY)
+        SCREEN.fill(GREY) #background colour is this
         YELLOW = (242, 210, 29)
         STATS_MOUSE_POS = pygame.mouse.get_pos()
 
@@ -301,7 +300,7 @@ def stats():
             text_rect = text_surface.get_rect(center=(x, overall_y))
             SCREEN.blit(text_surface, text_rect)
 
-        # Create lists of text surfaces for each column (Easy, Medium, Hard)
+        # Create lists of text surfaces for each column (Easy, Medium, Hard). This is what is displayed
         texts1 = [
             get_font(20).render("Easy", True, YELLOW),
             get_font(20).render(f"Wins: {wins1}", True, "White"),
@@ -363,10 +362,10 @@ def stats():
 
         pygame.display.update()
 
-def play():
+def play(): #takes player to the main game loop to actually play draughts
     main()
 
-def main_menu():
+def main_menu(): #start menu
     pygame.display.set_caption("Main Menu")
     while True:
         SCREEN.blit(BG1, (0, 0))
@@ -375,6 +374,7 @@ def main_menu():
         MENU_TEXT = get_font(70).render("START MENU", True, "#ff0000")
         MENU_RECT = MENU_TEXT.get_rect(center=(400, 100))
 
+        #the difffernt buttons for the player to choose from
         PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(400, 250), 
                             text_input="PLAY", font=get_font(75), base_color="#D8FCFF", hovering_color="White")
         OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(400, 400), 
@@ -408,7 +408,7 @@ def main_menu():
 
         pygame.display.update()
 
-main_menu()
+main_menu() #this is the first function called since it is the main menu and the game starts from here. 
 
 
 

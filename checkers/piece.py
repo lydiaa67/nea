@@ -13,33 +13,34 @@ class Piece:
         self.y = 0
         self.calc_pos()
 
-    def calc_pos(self):
+    def calc_pos(self): #calculates the position of the piece
         self.x = SQUARE_SIZE * self.col + SQUARE_SIZE // 2 #since I want piece to be in middle of square
         self.y = SQUARE_SIZE * self.row + SQUARE_SIZE // 2
 
-    def make_king(self):
+    def make_king(self): #makes the piece a king by setting the king attribute to True
         self.king = True
     
-    def draw(self, win, x_offset=0, y_offset=0):
+    def draw(self, win, x_offset=0, y_offset=0): #draws the piece on the board
         radius = (SQUARE_SIZE // 2) - 10
         pygame.draw.circle(win, self.color, (self.x + x_offset, self.y + y_offset), radius)
         if self.king:
             win.blit(CROWN, (self.x + x_offset - CROWN.get_width()//2, self.y + y_offset - CROWN.get_height()//2))
             
-    def move(self, row, col):
+    def move(self, row, col): #moves the piece to a new position
         self.row = row
         self.col = col
         self.calc_pos()
 
-    def __repr__(self): #for internal representation whivh will help with debugging
+    def __repr__(self): #for internal representation which will help with debugging
         return str(self.color)
     
-    def can_be_taken(self, board):
+    def can_be_taken(self, board): #works out if a piece can be captured by an opponent. It should ensure that there is empty space behind the piece to be taken
         directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]  # Possible directions for taking a piece
         for direction in directions:
             row, col = self.row + direction[0], self.col + direction[1]
             if 0 <= row < len(board) and 0 <= col < len(board[0]):
                 if board[row][col] != 0 and board[row][col].color != self.color:
+                    
                     # Check if the piece can be taken by jumping over it
                     jump_row, jump_col = row + direction[0], col + direction[1]
                     if 0 <= jump_row < len(board) and 0 <= jump_col < len(board[0]):

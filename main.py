@@ -28,7 +28,7 @@ def get_row_col_from_mouse(pos):
 
 def main():
     run = True
-    clock = pygame.time.Clock()
+    clock = pygame.time.Clock() #timer starts 
     game = Game(WIN)
     stats = Database_for_stats()
     total_nodes = 0  # Initialises total_nodes
@@ -41,20 +41,20 @@ def main():
         difficulty = choice
 
     d_count = 0
-    global depth
-    if difficulty == "easy":
-        depth = 3
+    global depth #so that depth can be accessed outside the function
+    if difficulty == "easy": #depth is assigned based on the difficulty level chosen
+        depth = 2
     elif difficulty == "medium":
         depth = 4
     else: #hard
         depth = 5
     
 
-    pygame.mixer.music.play(-1) 
+    pygame.mixer.music.play(-1) #so that the music plays on loop
 
-    while run and (((pygame.time.get_ticks() - turn_start_time) / 1000) < game.BLACK_time):
-        clock.tick(FPS)
-        game.board.dynamic_depth(d_count, depth)
+    while run and (((pygame.time.get_ticks() - turn_start_time) / 1000) < game.BLACK_time): #main game loop
+        clock.tick(FPS) #so that the game runs at a constant speed
+        game.board.dynamic_depth(d_count, depth) 
 
         if game.turn == RED:
             value, new_board, nodes_evaluated = minimax(game.get_board(), depth, True, game)
@@ -66,17 +66,17 @@ def main():
 
         if winner:
             print(winner)
-            pygame.time.delay(2000)
-            run = False
+            pygame.time.delay(2000) #delay so that its clear who won and why to player
+            run = False #ends the game loop
             break
 
         for event in pygame.event.get():
-            if (event.type == pygame.KEYDOWN and event.key == pygame.K_b):
+            if (event.type == pygame.KEYDOWN and event.key == pygame.K_b): #if the player wants to go back to the main menu
                 stop_music()
                 stats.update_stats("draw", difficulty)
                 run = False
 
-            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_q: #if player presses 'q'
                 stats.update_stats("draw", difficulty)
                 pygame.quit()
                 sys.exit()
@@ -92,28 +92,26 @@ def main():
                     row, col = row_col
                     game.select(row, col)
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_p: #pauses/ unpayes the music if p is pressed
                 control_music()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_s: #skips song in playlist if q is pressed
                 skip_music()
-            
-            game.update()
+             
+            game.update() #updates the game so that it is always up to date
 
     winner = game.winner()
-    seconds = (pygame.time.get_ticks() - turn_start_time) / 1000
-    print(f"You took: {seconds} seconds to win/lose")
-    print(f"Total nodes evaluated by AI: {total_nodes}")
+    seconds = (pygame.time.get_ticks() - turn_start_time) / 1000 #time taken
+    #print(f"You took: {seconds} seconds to win/lose")
 
-    if winner == "RED wins!" or seconds >= game.BLACK_time:
+    if winner == "RED wins!" or seconds >= game.BLACK_time: #if the AI wins or the time runs out
         stats.update_stats("loss", difficulty)
         from menu import loser  # Import inside function
         loser()
-    elif winner == "BLACK wins!":
+    elif winner == "BLACK wins!": #if the player wins
         stats.update_stats("win", difficulty)
         from menu import winner  # Import inside function
         winner()
 
-# Move this import inside the function to prevent circular import
 if __name__ == "__main__":
     from menu import main_menu
     main_menu()
